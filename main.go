@@ -3,13 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
-	"math/rand"
 	"net/http"
 	"strconv"
-	"time"
-
-	"github.com/gorilla/mux"
 )
 
 //	type test struct {
@@ -49,15 +46,24 @@ type Movie struct {
 	Released bool    `json:"released"`
 }
 
+type Ping struct {
+	Value string `json:"value"`
+}
+
+var counter int = 0
 var movies []Movie
 
 // helper file
 func (c *Movie) isEmpty() bool {
 	return c.Name == ""
 }
-func main() {
-	r := mux.NewRouter()
 
+func main() {
+
+	//n := mux.NewRouter()
+	//n.HandleFunc("/ping", sendPing)
+	//n.NotFoundHandler = http.HandlerFunc(notFoundHandler)
+	r := mux.NewRouter()
 	r.HandleFunc("/", serverHome).Methods("GET")
 	r.HandleFunc("/movies", getAllMovies).Methods("GET")
 	r.HandleFunc("/movies/{id}", getMovieById).Methods("GET")
@@ -66,12 +72,33 @@ func main() {
 	r.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
 	//listen to port
 	log.Fatal(http.ListenAndServe(":4000", r))
+	//log.Fatal(http.ListenAndServe(":4000", n))
 }
 func serverHome(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("server home")
 	w.Write([]byte("<h1>Welcome to API by LearnCodeOnline</h1>"))
 }
 
+//	func sendPing(w http.ResponseWriter, r *http.Request) {
+//		if r.Method == "GET" {
+//			ping := Ping{
+//				"ping",
+//			}
+//			counter += 1
+//			w.Header().Set("Content - Type", "application/json")
+//			w.Header().Set("X-Req-Count", strconv.Itoa(counter))
+//			json.NewEncoder(w).Encode(&ping)
+//		} else {
+//			w.WriteHeader(http.StatusForbidden)
+//			json.NewEncoder(w).Encode("Method not allowed")
+//		}
+//	}
+//
+//	func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+//		w.Header().Set("Content - Type", "application/json")
+//		w.WriteHeader(http.StatusNotFound)
+//		json.NewEncoder(w).Encode("Not found")
+//	}
 func getAllMovies(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("get all movies")
 	w.Header().Set("Content - Type", "application/json")
@@ -113,8 +140,9 @@ func addOneMovie(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	rand.Seed(time.Now().UnixNano())
-	movie.ID = rand.Intn(1000)
+	movie.ID = 1
+	//rand.Seed(time.Now().UnixNano())
+	//movie.ID = rand.Intn(1000)
 	movies = append(movies, movie)
 	responseOutput := MovieModel{
 		Code:   200,
